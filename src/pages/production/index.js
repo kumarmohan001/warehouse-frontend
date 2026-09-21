@@ -1,0 +1,2 @@
+import Dashboard from './Dashboard'; import CreateRequisition from './CreateRequisition'; import RequisitionStatus from './RequisitionStatus'; import DispensingNotifications from './DispensingNotifications'; import ReceiveMaterial from './ReceiveMaterial'; import Discrepancies from './Discrepancies';
+export default { Dashboard, 'Create Requisition': CreateRequisition, 'Requisition Status': RequisitionStatus, 'Dispensing Notifications': DispensingNotifications, 'Receive Material': ReceiveMaterial, Discrepancies };

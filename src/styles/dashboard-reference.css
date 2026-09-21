@@ -1,0 +1,42 @@
+:root { --protech-blue:#243f91; --protech-blue-dark:#142b68; --protech-blue-light:#edf2ff; }
+.reference-dashboard { min-height:100vh; background:#f5f7fa; }
+.reference-header { height:55px; padding:6px 16px; display:flex; gap:18px; align-items:center; border-bottom:1px solid #dde3eb; background:#fff; }
+.company-logo { width:145px; height:40px; object-fit:cover; object-position:center; border-radius:3px; }
+.role-tabs { height:35px; background:#eaf0f7; border-radius:7px; padding:3px; display:flex; gap:2px; flex:1; max-width:700px; }
+.role-tabs button { border:0; border-radius:5px; color:#5f6d80; background:transparent; padding:0 17px; font-size:12px; }
+.role-tabs button:hover,.role-tabs button.active { background:#fff; color:var(--protech-blue); box-shadow:0 1px 2px #243f911c; font-weight:700; }
+.header-actions { margin-left:auto; display:flex; align-items:center; gap:12px; }
+.all-roles { color:#2d5fbb; font-size:11px; font-weight:700; }
+.profile-mini { width:33px; height:33px; border:0; border-radius:50%; background:var(--protech-blue); color:#fff; font-weight:700; }
+.reference-dashboard .dashboard { min-height:calc(100vh - 55px); }
+.reference-dashboard .sidebar { width:216px; padding-top:20px; }
+.reference-dashboard .nav-heading { margin-top:0; }
+.reference-dashboard .topbar { height:75px; padding:13px 25px; }
+.reference-dashboard .topbar h2 { font-size:15px; margin:0; }
+.reference-dashboard .topbar p { margin:4px 0 0; color:#758195; font-size:11px; }
+.reference-dashboard .content { padding:25px; max-width:1200px; }
+.reference-dashboard .page-title h1 { font-size:21px; }
+.reference-dashboard .page-title p { font-size:12px; }
+.reference-dashboard .outline,.reference-dashboard .primary { background:var(--protech-blue); color:#fff; border-color:var(--protech-blue); }
+.reference-dashboard .stats article { border-radius:6px; min-height:106px; padding:15px 16px; }
+.reference-dashboard .stats strong { font-size:22px; }
+.reference-dashboard .stats p { margin-top:5px; }
+.reference-dashboard .trace-card,.reference-dashboard .table-card { border-radius:6px; }
+.reference-dashboard .trace-card { padding:18px; }
+.reference-dashboard .trace-title { margin:0; color:#586475; font-size:13px; font-weight:700; }
+.reference-dashboard .card-heading h3 { font-size:15px; }
+.reference-dashboard .live-dot { color:var(--protech-blue); background:var(--protech-blue-light); }
+.reference-dashboard .flow:before { background:#5c87d4; }
+.reference-dashboard .flow .done i { color:var(--protech-blue); border-color:#5c87d4; }
+.reference-dashboard .flow .current i { color:#fff; background:var(--protech-blue); border-color:var(--protech-blue); }
+.reference-dashboard .badge { color:var(--protech-blue); background:var(--protech-blue-light); }
+.reference-dashboard .badge.approved,.reference-dashboard .badge.accepted { color:#16845d; background:#e4f6ee; }
+.reference-dashboard .badge.rejected,.reference-dashboard .badge.discrepancy { color:#bb4a58; background:#feecef; }
+.reference-dashboard .badge.hold,.reference-dashboard .badge.pending,.reference-dashboard .badge.sent-to-prod { color:#a66c16; background:#fff1d8; }
+.coming-soon { min-height:420px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:#fff; border:1px solid #e1e6ee; border-radius:8px; padding:42px 24px; }
+.coming-soon h1 { margin:14px 0 9px; font-size:31px; letter-spacing:-.8px; color:#182946; }
+.coming-soon p:not(.eyebrow) { max-width:410px; margin:0; color:#718096; line-height:1.6; }
+.coming-soon .outline { margin-top:24px; }
+.maintenance-icon { width:87px; height:87px; display:grid; place-items:center; position:relative; color:#275eae; background:#eaf2ff; border-radius:50%; font-size:43px; line-height:1; }
+.maintenance-icon b { position:absolute; right:-9px; bottom:-4px; display:grid; place-items:center; width:37px; height:37px; border:3px solid #fff; border-radius:50%; color:#b57818; background:#fff3dc; font-size:20px; }
+@media (max-width:700px) { .company-logo { width:105px; } .role-tabs button { padding:0 8px; font-size:10px; } .all-roles { display:none; } .reference-dashboard .content { padding:18px; } }

@@ -1,0 +1,7 @@
+select { width:100%; padding:13px 14px; border:1px solid #dce3ec; border-radius:8px; color:var(--ink); background:#fff; outline:none; }
+select:focus { border-color:#4a79c5; box-shadow:0 0 0 3px #e8f0fc; }
+.phone-control,.password-control { display:flex; position:relative; }
+.phone-control select { width:96px; flex:none; border-radius:8px 0 0 8px; border-right:0; padding-left:9px; padding-right:6px; }
+.phone-control input { border-radius:0 8px 8px 0; }
+.password-control input { padding-right:62px; }
+.password-toggle { position:absolute; right:8px; top:50%; transform:translateY(-50%); border:0; color:#235cae; background:transparent; font-size:11px; font-weight:700; padding:5px; }
