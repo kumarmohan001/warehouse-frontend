@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const roles = [{ value: 'warehouse', label: 'Warehouse' }, { value: 'qc-test', label: 'QC Test' }, { value: 'production', label: 'Production' }, { value: 'admin', label: 'Admin' }];
+const roles = [{ value: 'warehouse', label: 'Warehouse' }, { value: 'qc-test', label: 'QC Test' }, { value: 'production', label: 'Production' }];
 
 function PasswordField({ label, name, placeholder, value, onChange }) {
   const [visible, setVisible] = useState(false);

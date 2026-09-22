@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { authApi } from '../api/client';
+import { authApi } from '../features/auth/authApi';
 import Brand from '../components/Brand';
 import AuthForm from '../components/AuthForm';
 import ServiceUnavailable from '../components/ServiceUnavailable';

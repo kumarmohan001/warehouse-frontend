@@ -1,5 +1,6 @@
 :root { --protech-blue:#243f91; --protech-blue-dark:#142b68; --protech-blue-light:#edf2ff; }
 .reference-dashboard { min-height:100vh; background:#f5f7fa; }
+.dashboard-toast { position:fixed; z-index:100; top:18px; left:50%; width:max-content; max-width:calc(100vw - 32px); margin:0; padding:11px 16px; transform:translateX(-50%); border:1px solid #f1b9c1; border-radius:8px; color:#a42d3d; background:#fff3f5; box-shadow:0 8px 22px #263b5a24; font-size:13px; font-weight:600; }
 .reference-header { height:55px; padding:6px 16px; display:flex; gap:18px; align-items:center; border-bottom:1px solid #dde3eb; background:#fff; }
 .company-logo { width:145px; height:40px; object-fit:cover; object-position:center; border-radius:3px; }
 .role-tabs { height:35px; background:#eaf0f7; border-radius:7px; padding:3px; display:flex; gap:2px; flex:1; max-width:700px; }
@@ -8,6 +9,19 @@
 .header-actions { margin-left:auto; display:flex; align-items:center; gap:12px; }
 .all-roles { color:#2d5fbb; font-size:11px; font-weight:700; }
 .profile-mini { width:33px; height:33px; border:0; border-radius:50%; background:var(--protech-blue); color:#fff; font-weight:700; }
+.notification-button { position:relative; display:grid; place-items:center; width:34px; height:34px; padding:0; border:1px solid #dce4ef; border-radius:50%; color:#45617e; background:#fff; }
+.notification-button:hover { color:var(--protech-blue); background:#f4f8ff; }
+.notification-button svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.notification-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; border:1.5px solid #fff; border-radius:50%; background:#db3f52; }
+.profile-menu { position:relative; }
+.profile-dropdown { position:absolute; z-index:10; top:calc(100% + 9px); right:0; width:210px; padding:7px; border:1px solid #dde5ee; border-radius:9px; background:#fff; box-shadow:0 10px 25px #1d385b1c; }
+.profile-dropdown-user { display:grid; gap:3px; padding:8px 9px 11px; border-bottom:1px solid #eef1f5; }
+.profile-dropdown-user b { color:#263955; font-size:12px; }
+.profile-dropdown-user small { overflow:hidden; color:#7b899b; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
+.profile-dropdown button { display:block; width:100%; padding:9px; border:0; border-radius:6px; color:#475a73; background:transparent; text-align:left; font-size:12px; }
+.profile-dropdown button:hover { color:var(--protech-blue); background:#edf4ff; }
+.profile-dropdown .profile-logout { margin-top:4px; border-top:1px solid #eef1f5; border-radius:0 0 6px 6px; color:#c74152; }
+.profile-dropdown .profile-logout:hover { color:#b62d40; background:#fff1f3; }
 .reference-dashboard .dashboard { min-height:calc(100vh - 55px); }
 .reference-dashboard .sidebar { width:216px; padding-top:20px; }
 .reference-dashboard .nav-heading { margin-top:0; }
