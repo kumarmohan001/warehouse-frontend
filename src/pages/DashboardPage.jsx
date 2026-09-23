@@ -7,6 +7,7 @@ import { roleDashboards, roleLabel } from '../data/roleDashboards';
 import { getRolePage } from '../routes/rolePages';
 import ComingSoonPage from './shared/ComingSoonPage';
 import ServiceUnavailable from '../components/ServiceUnavailable';
+import { warehouseApi } from '../features/warehouse/warehouseApi';
 
 export default function DashboardPage({ session, onLogout }) {
   const user = session.user;
@@ -17,6 +18,8 @@ export default function DashboardPage({ session, onLogout }) {
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [selectedRole, setSelectedRole] = useState(user.role);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const profileMenuRef = useRef(null);
 
   useEffect(() => {
@@ -30,6 +33,13 @@ export default function DashboardPage({ session, onLogout }) {
       }
     });
   }, [isAdmin, session.token, onLogout]);
+
+  useEffect(() => {
+    const loadNotifications = () => warehouseApi.notifications(session.token).then((data) => setNotifications(data.notifications || [])).catch(() => {});
+    loadNotifications();
+    const interval = window.setInterval(loadNotifications, 30000);
+    return () => window.clearInterval(interval);
+  }, [session.token]);
 
   useEffect(() => {
     const closeProfileMenu = (event) => {
@@ -54,10 +64,10 @@ export default function DashboardPage({ session, onLogout }) {
       {isAdmin && <RoleTabs selectedRole={selectedRole} onChange={selectRole} />}
       <div className="header-actions">
         {isAdmin && <span className="all-roles">All roles visible</span>}
-        <button className="notification-button" type="button" aria-label="Notifications" title="Notifications">
+        <div className="notification-menu"><button className="notification-button" type="button" aria-label="Notifications" title="Notifications" onClick={() => setNotificationsOpen((open) => !open)}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
-          <span className="notification-dot" aria-hidden="true" />
-        </button>
+          {notifications.some((notification) => !notification.read) && <span className="notification-dot" aria-hidden="true" />}
+        </button>{notificationsOpen && <div className="notification-dropdown"><b>Notifications</b>{notifications.length ? notifications.map((notification) => <article key={notification._id}><strong>{notification.title}</strong><span>{notification.message}</span></article>) : <p>No notifications yet.</p>}</div>}</div>
         <div className="profile-menu" ref={profileMenuRef}>
           <button className="profile-mini" type="button" title="Account menu" aria-label="Open account menu" aria-expanded={profileMenuOpen} onClick={() => setProfileMenuOpen((open) => !open)}>{user.name.charAt(0).toUpperCase()}</button>
           {profileMenuOpen && <div className="profile-dropdown" role="menu">

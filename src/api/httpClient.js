@@ -2,10 +2,11 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'htt
 
 export async function request(path, options = {}) {
   try {
+    const headers = { ...options.headers };
+    if (!(options.body instanceof FormData) && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
     const response = await fetch(API_BASE_URL + path, {
       ...options,
-      // Keep JSON content type when a feature adds Authorization or another header.
-      headers: { 'Content-Type': 'application/json', ...options.headers },
+      headers,
     });
     const body = await response.json();
     if (!response.ok || !body.success) throw new Error(body.message || 'Something went wrong.');
