@@ -51,6 +51,35 @@
 .coming-soon h1 { margin:14px 0 9px; font-size:31px; letter-spacing:-.8px; color:#182946; }
 .coming-soon p:not(.eyebrow) { max-width:410px; margin:0; color:#718096; line-height:1.6; }
 .coming-soon .outline { margin-top:24px; }
+.receiving-page { max-width:1080px; }
+.stock-rule,.required-label,.grn-number { display:inline-block; padding:6px 9px; border-radius:5px; color:#a66c16; background:#fff1d8; font-size:11px; font-weight:700; }
+.grn-number { color:#235ba9; background:#eaf2ff; }
+.required-label { color:#a42d3d; background:#fff0f2; }
+.receiving-notice { margin:-8px 0 16px; padding:12px 14px; border:1px solid #b9e5d3; border-radius:7px; color:#116e4d; background:#effaf5; font-size:12px; font-weight:700; }
+.receiving-form { display:grid; gap:16px; }
+.receiving-card { padding:20px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+.receiving-card .card-heading { align-items:flex-start; margin-bottom:17px; }
+.receiving-card h3 { margin:0; color:#263955; font-size:15px; }
+.receiving-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.receiving-fields label { min-width:0; }
+.receiving-fields input,.receiving-fields select,.receiving-fields textarea { padding:10px 11px; border-radius:7px; }
+.receiving-fields textarea { width:100%; min-height:78px; resize:vertical; border:1px solid #dce3ec; color:var(--ink); font:inherit; outline:none; }
+.receiving-fields textarea:focus { border-color:#4a79c5; box-shadow:0 0 0 3px #e8f0fc; }
+.receiving-fields small { color:#78869a; font-size:10px; font-weight:600; }
+.receiving-fields .expiry-warning { color:#c74152; }
+.full-field { grid-column:1/-1; }
+.document-card { padding-bottom:21px; }
+.document-help { margin:-5px 0 15px; color:var(--muted); font-size:12px; }
+.document-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.document-upload { gap:8px; padding:13px; border:1px dashed #b9c9dc; border-radius:7px; background:#f8faff; color:#334864; }
+.document-upload:hover { border-color:#4a79c5; background:#f2f6ff; }
+.document-upload input { padding:0; border:0; border-radius:0; font-size:11px; background:transparent; }
+.document-upload small { overflow:hidden; color:#758195; font-size:10px; font-weight:500; text-overflow:ellipsis; white-space:nowrap; }
+.receiving-actions { display:flex; justify-content:flex-end; gap:10px; }
+.receiving-actions .primary { margin:0; }
+.workflow-note { margin:0; padding:11px 13px; border-left:3px solid #d69b38; color:#5d6878; background:#fffaf0; font-size:12px; line-height:1.5; }
+@media (max-width:900px) { .receiving-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }.document-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px) { .receiving-fields,.document-grid { grid-template-columns:1fr; }.full-field { grid-column:auto; }.receiving-actions { justify-content:stretch; flex-direction:column-reverse; }.receiving-actions button { width:100%; }.stock-rule { display:none; } }
 .maintenance-icon { width:87px; height:87px; display:grid; place-items:center; position:relative; color:#275eae; background:#eaf2ff; border-radius:50%; font-size:43px; line-height:1; }
 .maintenance-icon b { position:absolute; right:-9px; bottom:-4px; display:grid; place-items:center; width:37px; height:37px; border:3px solid #fff; border-radius:50%; color:#b57818; background:#fff3dc; font-size:20px; }
 @media (max-width:700px) { .company-logo { width:105px; } .role-tabs button { padding:0 8px; font-size:10px; } .all-roles { display:none; } .reference-dashboard .content { padding:18px; } }

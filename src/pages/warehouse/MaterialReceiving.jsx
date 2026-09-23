@@ -1,2 +1,1 @@
-import { createComingSoonPage } from '../shared/ComingSoonPage';
-export default createComingSoonPage('Warehouse', 'Material Receiving');
+export { default } from './StockForm';

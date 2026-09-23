@@ -9,7 +9,7 @@ const shared = {
   },
   warehouse: {
     label: 'Warehouse', menuTitle: 'WAREHOUSE MENU', subtitle: 'Material movement and inventory control',
-    menu: [['Dashboard', '▦'], ['Material Receiving', '◇'], ['Document Check', '□'], ['Quarantine', '▤'], ['QC Approved Queue', '✓'], ['Warehouse Stock', '▱'], ['Requisitions (Pending)', '▻'], ['Dispensing', '⌁'], ['FG Receiving', '◇'], ['FG Stock', '▣'], ['FG Dispatch', '↗']],
+    menu: [['Dashboard', '▦'], ['Stock Form', 'T'],['Material Receiving', '◇'], ['Document Check', '□'], ['Quarantine', '▤'], ['QC Approved Queue', '✓'], ['Warehouse Stock', '▱'], ['Requisitions (Pending)', '▻'], ['Dispensing', '⌁'], ['FG Receiving', '◇'], ['FG Stock', '▣'], ['FG Dispatch', '↗']],
     stats: [['In Quarantine', '1,250 kg', '3 batches', 'blue'], ['Under Test', '640 kg', '2 batches', 'amber'], ['Available Stock', '9,830 kg', 'up 750 kg today', 'green'], ['Pending Requisitions', '04', 'awaiting dispensing', 'rose']],
     processTitle: 'RAW MATERIAL BATCH — RM-001 / B-2291', processSteps: ['Receiving', 'Doc. Check', 'Quarantine', 'QC Test', 'QC Approved', 'WH Verified', 'Available'], processActive: 4,
     tableTitle: 'Material receiving log', actionLabel: '+ New GRN', columns: ['GRN No.', 'Supplier', 'Material', 'Batch', 'Qty', 'Status'],
