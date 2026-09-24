@@ -9,5 +9,13 @@ function readSession() {
 export default function App() {
   const [session, setSession] = useState(readSession);
   const logout = useCallback(() => { localStorage.removeItem('protechSession'); setSession(null); }, []);
-  return session?.token ? <DashboardPage session={session} onLogout={logout} /> : <AuthPage onLogin={setSession} />;
+  const updateUser = useCallback((user) => {
+    setSession((current) => {
+      if (!current) return current;
+      const next = { ...current, user };
+      localStorage.setItem('protechSession', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+  return session?.token ? <DashboardPage onProfileUpdate={updateUser} session={session} onLogout={logout} /> : <AuthPage onLogin={setSession} />;
 }

@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '');
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '');
 
 export async function request(path, options = {}) {
   try {
@@ -8,6 +8,10 @@ export async function request(path, options = {}) {
       ...options,
       headers,
     });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error(response.status === 404 ? 'This API endpoint is unavailable. Please check the backend route.' : 'The server returned an unexpected response. Please try again.');
+    }
     const body = await response.json();
     if (!response.ok || !body.success) throw new Error(body.message || 'Something went wrong.');
     return body.data;
