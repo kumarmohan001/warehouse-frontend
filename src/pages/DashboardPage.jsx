@@ -1,3 +1,5 @@
+import { io } from 'socket.io-client';
+import { API_BASE_URL } from '../api/httpClient';
 import React, { useEffect, useRef, useState } from 'react';
 import { authApi } from '../features/auth/authApi';
 import { dashboardApi } from '../features/dashboard/dashboardApi';
@@ -9,9 +11,10 @@ import ComingSoonPage from './shared/ComingSoonPage';
 import ServiceUnavailable from '../components/ServiceUnavailable';
 import { warehouseApi } from '../features/warehouse/warehouseApi';
 
-export default function DashboardPage({ session, onLogout }) {
+export default function DashboardPage({ session, onLogout, onProfileUpdate }) {
   const user = session.user;
   const isAdmin = user.role === 'admin';
+  const [selectedReceiptId, setSelectedReceiptId] = useState(null);
   const [activePage, setActivePage] = useState('Dashboard');
   const [overview, setOverview] = useState(null);
   const [message, setMessage] = useState('');
@@ -36,9 +39,14 @@ export default function DashboardPage({ session, onLogout }) {
 
   useEffect(() => {
     const loadNotifications = () => warehouseApi.notifications(session.token).then((data) => setNotifications(data.notifications || [])).catch(() => {});
+    const socket = io(API_BASE_URL || window.location.origin, { auth: { token: session.token } });
+    socket.on('connect', loadNotifications);
+    socket.on('notification:new', (notification) => {
+      setNotifications((current) => [notification, ...current.filter((item) => item._id !== notification._id)].slice(0, 20));
+    });
     loadNotifications();
     const interval = window.setInterval(loadNotifications, 30000);
-    return () => window.clearInterval(interval);
+    return () => { window.clearInterval(interval); socket.disconnect(); };
   }, [session.token]);
 
   useEffect(() => {
@@ -48,6 +56,16 @@ export default function DashboardPage({ session, onLogout }) {
     document.addEventListener('mousedown', closeProfileMenu);
     return () => document.removeEventListener('mousedown', closeProfileMenu);
   }, []);
+
+  function openNotification(notification) {
+    const id = notification.workflowRecord?._id || notification.workflowRecord || notification.materialReceiving?._id || notification.materialReceiving;
+    if (!id) { setMessage('This receipt is no longer available.'); return; }
+    if (isAdmin) setSelectedRole(notification.targetRole || 'qc-test');
+    setSelectedReceiptId(id);
+    setActivePage(notification.targetPage || 'Sampling');
+    setNotificationsOpen(false);
+    warehouseApi.markRead(session.token, notification._id).then(() => setNotifications((current) => current.map((item) => item._id === notification._id ? { ...item, read: true } : item))).catch((error) => setMessage(error.message));
+  }
 
   async function logout() { try { await authApi.logout(session.token); } finally { onLogout(); } }
   const roleConfig = roleDashboards[selectedRole] || roleDashboards.warehouse;
@@ -67,9 +85,9 @@ export default function DashboardPage({ session, onLogout }) {
         <div className="notification-menu"><button className="notification-button" type="button" aria-label="Notifications" title="Notifications" onClick={() => setNotificationsOpen((open) => !open)}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
           {notifications.some((notification) => !notification.read) && <span className="notification-dot" aria-hidden="true" />}
-        </button>{notificationsOpen && <div className="notification-dropdown"><b>Notifications</b>{notifications.length ? notifications.map((notification) => <article key={notification._id}><strong>{notification.title}</strong><span>{notification.message}</span></article>) : <p>No notifications yet.</p>}</div>}</div>
+        </button>{notificationsOpen && <div className="notification-dropdown"><b>Notifications</b>{notifications.length ? notifications.map((notification) => <button type="button" className="notification-item" key={notification._id} onClick={() => openNotification(notification)}><strong>{notification.title}</strong><span>{notification.message}</span></button>) : <p>No notifications yet.</p>}</div>}</div>
         <div className="profile-menu" ref={profileMenuRef}>
-          <button className="profile-mini" type="button" title="Account menu" aria-label="Open account menu" aria-expanded={profileMenuOpen} onClick={() => setProfileMenuOpen((open) => !open)}>{user.name.charAt(0).toUpperCase()}</button>
+          <button className="profile-mini" type="button" title="Account menu" aria-label="Open account menu" aria-expanded={profileMenuOpen} onClick={() => setProfileMenuOpen((open) => !open)}>{user.photoUrl ? <img className="profile-avatar" src={user.photoUrl} alt="Your profile" /> : user.name.charAt(0).toUpperCase()}</button>
           {profileMenuOpen && <div className="profile-dropdown" role="menu">
             <div className="profile-dropdown-user"><b>{user.name}</b><small>{user.email}</small></div>
             <button type="button" role="menuitem" onClick={() => openAccountPage('Edit Profile')}>Edit profile</button>
@@ -80,11 +98,11 @@ export default function DashboardPage({ session, onLogout }) {
       </div>
     </header>
     <div className="dashboard">
-      <Sidebar active={activePage} onChange={setActivePage} onLogout={logout} menuTitle={roleConfig.menuTitle} items={roleConfig.menu} />
+      <Sidebar active={activePage} onChange={(page) => { setSelectedReceiptId(null); setActivePage(page); }} onLogout={logout} menuTitle={roleConfig.menuTitle} items={roleConfig.menu} />
       <section className="workspace">
         <header className="topbar"><div><h2>Welcome, <span>{user.name.split(' ')[0]}</span></h2><p>Signed in as {roleLabel(user.role)}</p></div></header>
         <div className="content">
-          {ActivePage ? <ActivePage token={session.token} overview={overview} onNavigate={setActivePage} onBack={() => setActivePage('Dashboard')} /> : <ComingSoonPage role={roleConfig.label} page={activePage} onBack={() => setActivePage('Dashboard')} />}
+          {ActivePage ? <ActivePage onProfileUpdate={onProfileUpdate} onLogout={onLogout} user={user} selectedReceiptId={selectedReceiptId} onCloseReceipt={() => setSelectedReceiptId(null)} token={session.token} overview={overview} onNavigate={setActivePage} onBack={() => setActivePage('Dashboard')} /> : <ComingSoonPage role={roleConfig.label} page={activePage} onBack={() => setActivePage('Dashboard')} />}
         </div>
       </section>
     </div>

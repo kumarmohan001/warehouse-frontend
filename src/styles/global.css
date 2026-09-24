@@ -46,3 +46,76 @@
 .pagination div { display:flex; gap:8px; }.pagination .outline { padding:7px 10px; font-size:11px; }.pagination button:disabled { cursor:not-allowed; opacity:.45; }
 @media (max-width:1050px) { .user-form { max-width:none; }.user-fields { grid-template-columns:repeat(3,1fr); } }
 @media (max-width:600px) { .user-fields,.permission-list,.user-filters,.user-details dl { grid-template-columns:1fr; }.pagination { align-items:flex-start; gap:10px; flex-direction:column; } }
+.notification-item { display: block; width: 100%; text-align: left; padding: 12px; border: 0; border-bottom: 1px solid #e4e8ee; background: white; cursor: pointer; }
+.notification-item:hover { background: #f1f5f9; }
+.notification-item strong, .notification-item span { display: block; }
+.notification-item span { margin-top: 6px; font-size: 12px; color: #566477; }
+.qc-stock-filters { margin-bottom: 20px; }
+.qc-receipt-details { max-height: 90vh; overflow-y: auto; }
+.qc-status-form { display: grid; gap: 12px; margin: 20px 0; }
+.qc-status-form label { display: grid; gap: 6px; }
+.qc-status-form select, .qc-status-form textarea { padding: 10px; border: 1px solid #ccd4df; border-radius: 6px; }
+.profile-page { display: grid; gap: 20px; }
+.profile-fields { border: 0; padding: 0; margin: 16px 0 0; min-width: 0; }
+.profile-fields > .primary { margin-top: 18px; }
+.profile-photo-row { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin-bottom: 20px; }
+.profile-photo-row label { display: grid; gap: 8px; }
+.profile-photo-preview, .profile-photo-placeholder { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; }
+.profile-photo-placeholder { display: grid; place-items: center; background: #e8f0fc; color: #235cae; font-size: 32px; }
+.profile-avatar { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.profile-password-toggle { display: grid; place-items: center; cursor: pointer; }
+.profile-fields .password-control input { width: 100%; min-width: 0; padding-right: 44px; }
+.flow-page { display: grid; gap: 20px; }
+.flow-buttons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.flow-buttons .primary, .flow-buttons .outline { width: auto; }
+.flow-summary { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 14px; }
+.flow-summary > button, .flow-summary > article { display: grid; gap: 8px; padding: 18px; text-align: left; border: 1px solid #dce4ef; border-radius: 12px; background: #fff; color: #233b58; }
+.flow-summary > button { cursor: pointer; }
+.flow-summary b { font-size: 21px; }
+.flow-summary small, .flow-summary span { color: #63758c; }
+.flow-filters { display: flex; gap: 14px; flex-wrap: wrap; }
+.flow-filters input { flex: 2; min-width: 220px; }
+.flow-filters select { flex: 1; min-width: 180px; }
+.flow-status { display: inline-flex; border-radius: 20px; padding: 6px 10px; background: #edf2f8; color: #42526d; font-weight: 600; font-size: 12px; white-space: nowrap; }
+.flow-status-available, .flow-status-completed, .flow-status-dispatched { background: #e0f5e9; color: #156d40; }
+.flow-status-approved { background: #e5eefc; color: #235cab; }
+.flow-status-hold, .flow-status-document-hold, .flow-status-discrepancy { background: #fff1d8; color: #8c5b08; }
+.flow-status-rejected { background: #fde5e5; color: #a92c37; }
+.flow-status-under-test { background: #eee6ff; color: #6440a8; }
+.flow-modal { background: white; border-radius: 16px; padding: 26px; width: min(1120px,95vw); max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 70px #10294533; }
+.flow-modal > .card-heading { position: sticky; top: -26px; background: white; padding: 12px 0; z-index: 2; border-bottom: 1px solid #edf0f5; margin-bottom: 18px; }
+.flow-modal h2 { font-size: 20px; }
+.flow-record-header { display: grid; gap: 18px; margin-bottom: 16px; }
+.flow-record-header > .flow-status { justify-self: start; }
+.flow-form-grid, .flow-details { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.flow-field { display: grid; gap: 7px; font-size: 13px; font-weight: 600; min-width: 0; }
+.flow-field input, .flow-field select, .flow-field textarea { width: 100%; }
+.flow-field textarea { min-height: 90px; resize: vertical; padding: 12px; border: 1px solid #dce3ec; border-radius: 8px; }
+.flow-field select[multiple] { min-height: 150px; }
+.flow-details { margin: 20px 0; }
+.flow-details > div { padding: 12px 0; border-bottom: 1px solid #edf1f7; }
+.flow-details dt { font-size: 12px; color: #63758c; }
+.flow-details dd { margin: 5px 0 0; overflow-wrap: anywhere; }
+.flow-note { background: #f4f7fc; border: 1px solid #e4ebf5; border-radius: 10px; padding: 14px; margin: 14px 0; color: #415672; }
+.flow-note p { margin: 6px 0; line-height: 1.5; }
+.flow-tabs { display: flex; border-bottom: 1px solid #dce4ef; gap: 6px; margin: 18px 0; }
+.flow-tabs button { border: 0; background: none; padding: 12px 18px; color: #63758c; cursor: pointer; }
+.flow-tabs .active { color: #235cab; border-bottom: 3px solid #235cab; font-weight: 700; }
+.flow-test { border: 1px solid #e1e7f0; border-radius: 10px; padding: 18px; margin: 16px 0; }
+.flow-confirm { display: flex; align-items: flex-start; gap: 10px; margin: 22px 0; line-height: 1.5; }
+.flow-confirm input { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+.flow-action-form .flow-buttons { margin-top: 22px; justify-content: flex-end; }
+.flow-documents { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 12px; }
+.flow-documents a { display: grid; gap: 8px; border: 1px solid #dae3ef; border-radius: 10px; padding: 16px; color: #235cab; overflow-wrap: anywhere; }
+.flow-documents span { font-size: 12px; }
+.flow-timeline { padding-left: 24px; }
+.flow-timeline li { padding: 0 0 24px 10px; }
+.flow-timeline span, .flow-timeline small { display: block; margin-top: 5px; color: #63758c; }
+.flow-timeline pre { overflow-x: auto; background: #f6f8fc; padding: 12px; font-size: 12px; }
+.flow-section { margin-top: 26px; }
+.flow-section .stock-table { min-width: 900px; }
+.flow-success { display: flex; justify-content: space-between; background: #e0f5e9; color: #156d40; padding: 12px 18px; border-radius: 8px; }
+.flow-success button { border: 0; background: none; cursor: pointer; }
+.flow-locations { list-style: none; padding: 8px 20px; }
+.flow-locations li { padding: 14px 0; border-bottom: 1px solid #edf1f7; }
+@media (max-width:700px) { .flow-form-grid, .flow-details { grid-template-columns: 1fr; } .flow-modal { padding: 18px; } .flow-modal > .card-heading { top: -18px; } }

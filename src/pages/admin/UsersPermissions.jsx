@@ -7,10 +7,10 @@ const permissionOptions = [
   ['production:view', 'Production view'], ['production:manage', 'Production manage'],
   ['reports:view', 'Reports view'],
 ];
-const emptyUser = { name: '', email: '', phone: '', password: '', role: 'warehouse', status: 'Active', permissions: [] };
+const emptyUser = { name: '', email: '', phone: '', password: '', confirmPassword: '', role: 'warehouse', status: 'Active', permissions: [] };
 const roleName = { warehouse: 'Warehouse', 'qc-test': 'QC Test', production: 'Production', admin: 'Admin' };
 
-export default function UsersPermissions({ token }) {
+export default function UsersPermissions({ token, user: currentUser, onLogout }) {
   const [filters, setFilters] = useState({ search: '', role: '', status: '', page: 1 });
   const [result, setResult] = useState({ users: [], pagination: { page: 1, total: 0, totalPages: 1 } });
   const [form, setForm] = useState(emptyUser);
@@ -51,10 +51,12 @@ export default function UsersPermissions({ token }) {
 
   async function saveUser(event) {
     event.preventDefault(); setSaving(true); setMessage(''); setError('');
-    const payload = { ...form };
+    if (form.password && form.password !== form.confirmPassword) { setError('Password and confirmation must match.'); setSaving(false); return; }
+    const { confirmPassword, ...payload } = form;
     if (editingId && !payload.password) delete payload.password;
     try {
       await (editingId ? usersApi.update(token, editingId, payload) : usersApi.create(token, payload));
+      if (editingId === (currentUser?.id || currentUser?._id) && payload.password) { onLogout(); return; }
       setToast(editingId ? 'User updated successfully.' : `${roleName[payload.role]} role is created successfully.`);
       setForm(emptyUser); setEditingId(null); setIsFormOpen(false);
       void loadUsers(false);
@@ -67,7 +69,7 @@ export default function UsersPermissions({ token }) {
 
   function editUser(user) {
     setEditingId(user._id); setMessage(''); setError('');
-    setForm({ name: user.name || '', email: user.email || '', phone: user.phone || '', password: '', role: user.role || 'warehouse', status: user.status || 'Active', permissions: user.permissions || [] });
+    setForm({ name: user.name || '', email: user.email || '', phone: user.phone || '', password: '', confirmPassword: '', role: user.role || 'warehouse', status: user.status || 'Active', permissions: user.permissions || [] });
     setIsFormOpen(true);
   }
 
@@ -98,10 +100,13 @@ export default function UsersPermissions({ token }) {
           <label>Full name<input required value={form.name} onChange={(event) => updateForm('name', event.target.value)} placeholder="User name" /></label>
           <label>Work email<input required type="email" value={form.email} onChange={(event) => updateForm('email', event.target.value)} placeholder="user@company.com" /></label>
           <label>Phone<input value={form.phone} onChange={(event) => updateForm('phone', event.target.value)} placeholder="Optional" /></label>
-          <label>{editingId ? 'New password (optional)' : 'Password'}<input required={!editingId} minLength="6" type="password" value={form.password} onChange={(event) => updateForm('password', event.target.value)} placeholder="Minimum 6 characters" /></label>
+          <label>{editingId ? 'New password (optional)' : 'Password'}<input required={!editingId} minLength="6" autoComplete="new-password" type="password" value={form.password} onChange={(event) => updateForm('password', event.target.value)} placeholder="Minimum 6 characters" /></label>
+          <label>Confirm {editingId ? 'new password' : 'password'}<input required={Boolean(form.password)} minLength="6" type="password" autoComplete="new-password" value={form.confirmPassword} onChange={(event) => updateForm('confirmPassword', event.target.value)} placeholder={editingId ? 'Leave blank to keep current password' : 'Re-enter password'} /></label>
           <label>Role<select value={form.role} onChange={(event) => updateForm('role', event.target.value)}>{Object.entries(roleName).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
           <label>Status<select value={form.status} onChange={(event) => updateForm('status', event.target.value)}><option>Active</option><option>Inactive</option></select></label>
         </div>
+        {error && <p className="form-message error" role="alert">{error}</p>}
+        {editingId && <p>Enter and confirm a new password to reset it. The user will need to sign in again.</p>}
         <fieldset className="permission-list"><legend>Permissions</legend>{permissionOptions.map(([value, label]) => <label key={value}><input type="checkbox" checked={form.permissions.includes(value)} onChange={() => togglePermission(value)} />{label}</label>)}</fieldset>
         <button className="primary" disabled={saving} type="submit">{saving ? 'Saving...' : editingId ? 'Save changes' : 'Create user'}</button>
       </form>

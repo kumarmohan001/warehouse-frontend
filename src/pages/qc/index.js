@@ -1,2 +1,3 @@
+import ReceivingStock from './ReceivingStock';
 import Dashboard from './Dashboard'; import QuarantineQueue from './QuarantineQueue'; import Sampling from './Sampling'; import UnderTest from './UnderTest'; import EnterTestResults from './EnterTestResults'; import QcDocuments from './QcDocuments'; import ApproveRejectHold from './ApproveRejectHold';
-export default { Dashboard, 'Quarantine Queue': QuarantineQueue, Sampling, 'Under Test': UnderTest, 'Enter Test Results': EnterTestResults, 'QC Documents': QcDocuments, 'Approve / Reject / Hold': ApproveRejectHold };
+export default { Dashboard, 'Receiving Stock': ReceivingStock, 'Quarantine Queue': QuarantineQueue, Sampling, 'Under Test': UnderTest, 'Enter Test Results': EnterTestResults, 'QC Documents': QcDocuments, 'Approve / Reject / Hold': ApproveRejectHold };
