@@ -8,6 +8,10 @@ export async function request(path, options = {}) {
       ...options,
       headers,
     });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error(response.status === 404 ? 'This API endpoint is unavailable. Please check the backend route.' : 'The server returned an unexpected response. Please try again.');
+    }
     const body = await response.json();
     if (!response.ok || !body.success) throw new Error(body.message || 'Something went wrong.');
     return body.data;

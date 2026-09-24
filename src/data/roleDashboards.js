@@ -9,7 +9,7 @@ const shared = {
   },
   warehouse: {
     label: 'Warehouse', menuTitle: 'WAREHOUSE MENU', subtitle: 'Material movement and inventory control',
-    menu: [['Dashboard', '▦'], ['Stock Form', 'T'],['Material Receiving', '◇'], ['Document Check', '□'], ['Quarantine', '▤'], ['QC Approved Queue', '✓'], ['Warehouse / Location', 'L'], ['Warehouse Stock', '▱'], ['Requisitions (Pending)', '▻'], ['Dispensing', '⌁'], ['FG Receiving', '◇'], ['FG Stock', '▣'], ['FG Dispatch', '↗']],
+    menu: [['Dashboard', '▦'], ['Stock Form', 'T'],['Material Receiving', '◇'], ['Document Check', '□'], ['Quarantine', '▤'], ['QC Approved Queue', '✓'], ['Warehouse Stock', '▱'], ['Requisitions (Pending)', '▻'], ['Dispensing', '⌁'], ['FG Receiving', '◇'], ['FG Stock', '▣'], ['FG Dispatch', '↗']],
     stats: [['In Quarantine', '1,250 kg', '3 batches', 'blue'], ['Under Test', '640 kg', '2 batches', 'amber'], ['Available Stock', '9,830 kg', 'up 750 kg today', 'green'], ['Pending Requisitions', '04', 'awaiting dispensing', 'rose']],
     processTitle: 'RAW MATERIAL BATCH — RM-001 / B-2291', processSteps: ['Receiving', 'Doc. Check', 'Quarantine', 'QC Test', 'QC Approved', 'WH Verified', 'Available'], processActive: 4,
     tableTitle: 'Material receiving log', actionLabel: '+ New GRN', columns: ['GRN No.', 'Supplier', 'Material', 'Batch', 'Qty', 'Status'],
@@ -25,7 +25,7 @@ const shared = {
   },
   production: {
     label: 'Production', menuTitle: 'PRODUCTION MENU', subtitle: 'Material requisitions and receipt confirmation',
-    menu: [['Dashboard', '▦'], ['Create Requisition', '□'], ['Requisition Status', '◷'], ['Dispensing Notifications', '▱'], ['Receive Material', '◇'], ['FG Handover', 'F'], ['Discrepancies', '⌁']],
+    menu: [['Dashboard', '▦'], ['Create Requisition', '□'], ['Requisition Status', '◷'], ['Dispensing Notifications', '▱'], ['Receive Material', '◇'], ['Discrepancies', '⌁']],
     stats: [['Open Requisitions', '04', 'awaiting dispensing', 'blue'], ['Awaiting Receipt', '01', 'dispensed, not yet received', 'amber'], ['Received Today', '03', 'up 1 vs yesterday', 'green'], ['Open Discrepancies', '01', 'see MR-000125', 'rose']],
     processTitle: 'REQUISITION MR-000125 — RM-001, 250 KG', processSteps: ['Requested', 'Dispensed', 'Sent to Prod.', 'Received', 'Checked', 'Accepted'], processActive: 3,
     tableTitle: 'My requisitions', actionLabel: '+ New requisition', columns: ['MR No.', 'Material', 'Qty Req.', 'Batch Issued', 'Status'],
