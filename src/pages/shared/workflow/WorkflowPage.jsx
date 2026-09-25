@@ -9,7 +9,7 @@ import { Status, Modal, Documents, Pager, RecordDetails, formatDate, person, sta
 const actionNames = { sampling: 'Sampling Details', tests: 'Enter QC test results', decision: 'QC final decision', acceptRaw: 'Warehouse verification & acceptance', requisition: 'Create material requisition', dispense: 'Confirm material dispensing', receive: 'Production receipt check', resolve: 'Resolve discrepancy', fg: 'Create FG handover', submitFg: 'Submit FG handover', acceptFg: 'Verify finished goods', dispatch: 'Create FG dispatch request', confirmDispatch: 'Confirm FG dispatch', uploadQc: 'Upload QC documents', uploadFg: 'Upload FG documents', adjust: 'Authorized stock adjustment' };
 const states = { raw: ['Document Hold', 'Quarantine', 'Under Test', 'Hold', 'Approved', 'Rejected', 'Available'], requisition: ['Pending', 'Partially Dispensed', 'Sent to Production', 'Discrepancy', 'Completed'], fg: ['Pending Documents', 'Pending Verification', 'Discrepancy', 'Available'], dispatch: ['Pending', 'Dispatched'] };
 
-export default function WorkflowPage({ token, user, title, kind = 'raw', mode, defaultStatus = '', selectedReceiptId, onCloseReceipt = () => {}, onNavigate }) {
+export default function WorkflowPage({ token, user, title, kind = 'raw', mode, defaultStatus = '', awaitingReceipt = false, selectedReceiptId, onCloseReceipt = () => {}, onNavigate }) {
   const raw = kind === 'raw';
   const [records, setRecords] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 1 });
@@ -41,11 +41,11 @@ export default function WorkflowPage({ token, user, title, kind = 'raw', mode, d
     let active = true;
     setLoading(true); setError('');
     const timer = setTimeout(() => {
-      const work = raw ? warehouseApi.list(token, { page, search, status }) : workflowApi.get(token, `records/${kind}`, { page, search, status });
+      const work = raw ? warehouseApi.list(token, { page, search, status }) : workflowApi.get(token, `records/${kind}`, { page, search, status, awaitingReceipt });
       work.then((data) => { if (active) { setRecords(data.records); setPagination({ ...data.pagination, page }); } }).catch((error) => { if (active) setError(error.message); }).finally(() => { if (active) setLoading(false); });
     }, 200);
     return () => { active = false; clearTimeout(timer); };
-  }, [token, page, search, status, reload, kind]);
+  }, [token, page, search, status, reload, kind, awaitingReceipt]);
   useEffect(() => { if (selectedReceiptId) setSelected(selectedReceiptId); }, [selectedReceiptId]);
   useEffect(() => {
     let active = true;
@@ -119,7 +119,7 @@ export default function WorkflowPage({ token, user, title, kind = 'raw', mode, d
         {raw && record.status !== 'Available' && <p className="flow-note">This material is blocked for production until QC approves it and Warehouse physically accepts it.</p>}
         {raw && mode === 'warehouse' && ['Document Hold', 'Quarantine', 'Hold'].includes(record.status) && <button className="text-button" onClick={() => { close(); onNavigate('Stock Form'); }}>Open receipt editor / QC assignment</button>}
         {raw && <QcLifecycle receipt={record} />}
-        <nav className="flow-tabs" aria-label="Record sections">{['Details', 'Documents'].map((name) => <button key={name} className={tab === name ? 'active' : ''} onClick={() => setTab(name)}>{name}</button>)}</nav>
+        <nav className="flow-tabs" aria-label="Record sections">{['Details', 'Documents', 'Traceability'].map((name) => <button key={name} className={tab === name ? 'active' : ''} onClick={() => setTab(name)}>{name}</button>)}</nav>
         {tab === 'Details' && <RecordDetails record={record} raw={raw} />}
         {tab === 'Documents' && <Documents documents={documents} />}
         {tab === 'Traceability' && <>{traceError ? <p className="form-message error" role="alert">{traceError}</p> : !trace ? <p>Loading transaction history...</p> : <>{trace.receipts.map((receipt) => <div className="flow-note" key={receipt._id}><b>Supplier receipt: {receipt.grnNumber}</b><p>{receipt.supplierName} → {receipt.materialName} / {receipt.batchNo} · {receipt.receivedQuantity} {receipt.quantityUnit} · {formatDate(receipt.createdAt)}</p></div>)}<ol className="flow-timeline">{trace.events.map((entry) => <li key={entry._id}><b>{entry.action}</b><span>{entry.reference} · {entry.number}</span><small>{person(entry.actor)} · {formatDate(entry.createdAt)}</small>{entry.quantity !== undefined && <p>Quantity: {entry.quantity} {entry.unit}</p>}{entry.note && <p>{entry.note}</p>}{entry.details && <details><summary>Audit details</summary><pre>{JSON.stringify(entry.details, null, 2)}</pre></details>}</li>)}</ol>{!trace.events.length && <p>No workflow actions recorded yet.</p>}<Pager pagination={trace.pagination} onPage={setTracePage} /></>}</>}

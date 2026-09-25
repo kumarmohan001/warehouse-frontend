@@ -7,7 +7,7 @@ import WarehouseStock from './WarehouseStock';
 const documentFields = [['coa', 'COA'], ['invoiceDocument', 'Invoice'], ['packingList', 'Packing List'], ['otherDocuments', 'Other required documents']];
 const initialForm = () => ({ grn: '', materialType: '', materialCode: '', supplierName: '', poNumber: '', invoiceNumber: '', materialName: '', batchNo: '', manufacturer: '', receivedQuantity: '', containers: '', manufacturingDate: '', expiryDate: '', receivingDate: new Date().toISOString().slice(0, 10), storageRequirement: '', qcAssignedTo: '', remarks: '' });
 
-export default function StockForm({ token, onNavigate = () => {} }) {
+export default function StockForm({ token, user, onNavigate = () => {} }) {
   const [showForm, setShowForm] = useState(false);
   const [listToast, setListToast] = useState('');
   const [form, setForm] = useState(initialForm);
@@ -58,6 +58,7 @@ export default function StockForm({ token, onNavigate = () => {} }) {
   if (!showForm) return <WarehouseStock token={token} onNavigate={onNavigate} onCreate={() => setShowForm(true)} initialToast={listToast} />;
 
   return <section className="receiving-page">
+    {user && <article className="receiving-card"><h3>Receiving account</h3><p><strong>{user.name}</strong> | {user.email}{user.phone ? ` | ${user.phone}` : ''}</p><small>This receipt is automatically saved under your signed-in account.</small></article>}
     {toast && <div className="success-toast" role="status">✓ {toast}</div>}
     <div className="page-title"><div><h1>Material Receiving / Stock Form</h1><p>Record supplier material before it enters the warehouse workflow.</p></div><span className="stock-rule">Not available for normal stock or production</span></div>
     {error && <div className="stock-toast error-toast" role="alert">⚠ {error}</div>}
