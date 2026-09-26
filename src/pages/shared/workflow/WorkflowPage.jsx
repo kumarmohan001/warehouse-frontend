@@ -4,10 +4,12 @@ import { qcCompletion } from './qcCompletion';
 import { warehouseApi } from '../../../features/warehouse/warehouseApi';
 import { workflowApi } from '../../../features/warehouse/workflowApi';
 import WorkflowAction from './WorkflowAction';
+import FinishedGoodsProgress from './FinishedGoodsProgress';
 import { Status, Modal, Documents, Pager, RecordDetails, formatDate, person, statusLabel } from './WorkflowComponents';
 
 const actionNames = { sampling: 'Sampling Details', tests: 'Enter QC test results', decision: 'QC final decision', acceptRaw: 'Warehouse verification & acceptance', requisition: 'Create material requisition', dispense: 'Confirm material dispensing', receive: 'Production receipt check', resolve: 'Resolve discrepancy', fg: 'Create FG handover', submitFg: 'Submit FG handover', acceptFg: 'Verify finished goods', dispatch: 'Create FG dispatch request', confirmDispatch: 'Confirm FG dispatch', uploadQc: 'Upload QC documents', uploadFg: 'Upload FG documents', adjust: 'Authorized stock adjustment' };
 const states = { raw: ['Document Hold', 'Quarantine', 'Under Test', 'Hold', 'Approved', 'Rejected', 'Available'], requisition: ['Pending', 'Partially Dispensed', 'Sent to Production', 'Discrepancy', 'Completed'], fg: ['Pending Documents', 'Pending Verification', 'Discrepancy', 'Available'], dispatch: ['Pending', 'Dispatched'] };
+actionNames.editDispatch = 'Edit dispatch quantity';
 
 export default function WorkflowPage({ token, user, title, kind = 'raw', mode, defaultStatus = '', awaitingReceipt = false, selectedReceiptId, onCloseReceipt = () => {}, onNavigate }) {
   const raw = kind === 'raw';
@@ -67,7 +69,10 @@ export default function WorkflowPage({ token, user, title, kind = 'raw', mode, d
 
   function close() { if (busy) return; setAction(null); setSelected(null); setRecord(null); onCloseReceipt(); }
   function saved(updated) { setRecord(updated); setAction(null); setSelected(updated._id); setReload((value) => value + 1); setToast('Saved successfully. Stock and workflow status are up to date.'); }
-  const completion = qcCompletion(record);
+  const completion = {
+    ...qcCompletion(record),
+    uploadFg: (record?.documents || []).some((document) => Boolean(document.fileUrl)),
+  };
   async function openAction(name) {
     if (busy) return;
     if (name !== 'decision') { setAction(name); return; }
@@ -101,6 +106,7 @@ export default function WorkflowPage({ token, user, title, kind = 'raw', mode, d
     }
     if (kind === 'fg' && mode === 'warehouse' && ['Pending Verification', 'Discrepancy'].includes(record.status)) availableActions.push('acceptFg');
     if (kind === 'dispatch' && record.status === 'Pending') availableActions.push('confirmDispatch');
+    if (kind === 'dispatch' && record.status === 'Pending' && user.role === 'admin') availableActions.push('editDispatch');
     if (user.role === 'admin' && (raw || kind === 'fg') && record.status === 'Available') availableActions.push('adjust');
   }
   const documents = record ? (raw ? [...Object.entries(record.documents || {}).filter(([, file]) => file.fileUrl).map(([kind, file]) => ({ ...file, kind })), ...(record.qc?.documents || [])] : record.documents || []) : [];
@@ -114,7 +120,9 @@ export default function WorkflowPage({ token, user, title, kind = 'raw', mode, d
     <article className="stock-list-card"><div className="table-wrap"><table className="stock-table"><thead><tr><th>Reference</th><th>Material / Batch</th><th>Quantity</th><th>Available</th><th>Location / Owner</th><th>Status</th><th>Action</th></tr></thead><tbody>{loading ? <tr><td colSpan="7" className="table-state">Loading records...</td></tr> : records.length ? records.map((item) => <tr key={item._id}><td><button className="text-button" onClick={() => { setSelected(item._id); setAction(null); }}>{item.grnNumber || item.number}</button><small>{item.materialCode}</small></td><td>{item.materialName}<small>{item.batchNo || item.productionOrder || 'Batch pending'}</small></td><td>{item.receivedQuantity ?? item.quantity} {item.quantityUnit}</td><td>{item.status === 'Available' ? `${item.availableQuantity} ${item.quantityUnit}` : 'Blocked / not stock'}</td><td>{item.verification?.location || item.location || item.qcAssignedTo?.name || item.createdBy?.name || 'Not assigned'}</td><td><Status value={item.status} />{item.sampling?.number && <small>Sampled material ? {item.sampling.number}</small>}</td><td><button className="outline" onClick={() => { setSelected(item._id); setAction(null); }}>Open record</button></td></tr>) : <tr><td colSpan="7" className="table-state">No records match this view.</td></tr>}</tbody></table></div><Pager pagination={pagination} onPage={setPage} loading={loading} /></article>
     {(selected || action) && <Modal title={action ? actionNames[action] : `${record?.grnNumber || record?.number || 'Loading...'} · ${record?.materialName || ''}`} busy={busy} onClose={close}>
       {action ? <WorkflowAction key={action + (record?._id || '')} action={action} record={record} token={token} user={user} lookups={lookups} onSaved={saved} onBusy={setBusy} onCancel={() => record ? setAction(null) : close()} /> : !record ? <p>Loading details...</p> : <>
-        <div className="flow-record-header"><Status value={record.status} />{record.sampling?.number && <span>Sampled material · {record.sampling.number}</span>}<div className="flow-buttons">{availableActions.map((name) => <button key={name} disabled={busy} className={completion[name] === true ? 'outline qc-action-complete' : name === 'sampling' || name === 'acceptRaw' ? 'primary' : 'outline'} onClick={() => openAction(name)}>{actionNames[name]}{completion[name] === true ? name === 'uploadQc' ? ' — Uploaded ✓' : ' — Saved ✓' : ''}</button>)}</div></div>
+        <div className="flow-record-header"><Status value={record.status} />{record.sampling?.number && <span>Sampled material · {record.sampling.number}</span>}<div className="flow-buttons">{availableActions.map((name) => <button key={name} disabled={busy} className={completion[name] === true ? 'outline qc-action-complete' : name === 'sampling' || name === 'acceptRaw' ? 'primary' : 'outline'} onClick={() => openAction(name)}>{actionNames[name]}{completion[name] === true ? ['uploadQc', 'uploadFg'].includes(name) ? ' — Uploaded ✓' : ' — Saved ✓' : ''}</button>)}</div></div>
+        <FinishedGoodsProgress record={record} kind={kind} />
+        {kind === 'fg' && mode === 'warehouse' && record.status !== 'Available' && <button className="text-button" onClick={() => { close(); onNavigate('Warehouse / Location'); }}>Manage storage locations</button>}
         {raw && mode === 'qc' && <p className="lifecycle-description">Test results: {completion.tests ? `${record.qc.tests.length} saved` : 'Not saved'} · QC documents: {completion.uploadQc ? 'Uploaded' : `Missing ${completion.missingDocuments.join(', ')}`}</p>}
         {raw && record.status !== 'Available' && <p className="flow-note">This material is blocked for production until QC approves it and Warehouse physically accepts it.</p>}
         {raw && mode === 'warehouse' && ['Document Hold', 'Quarantine', 'Hold'].includes(record.status) && <button className="text-button" onClick={() => { close(); onNavigate('Stock Form'); }}>Open receipt editor / QC assignment</button>}
