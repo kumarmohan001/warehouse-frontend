@@ -1,0 +1,43 @@
+@media screen {
+  body:has(.user-modal-backdrop, .samplers-backdrop) { overflow:hidden; }
+  .user-modal-backdrop,.samplers-backdrop { box-sizing:border-box; padding:24px; overflow-y:auto; overscroll-behavior:contain; align-items:center; background:rgba(15,27,48,.56); backdrop-filter:blur(3px); }
+  .user-modal-backdrop { z-index:1000; }
+  .samplers-backdrop { z-index:2000; }
+  .user-modal-backdrop :is(.user-modal,.flow-modal), .samplers-modal {
+    box-sizing:border-box; margin:0 auto; width:min(960px,100%); max-width:100%; max-height:calc(100dvh - 48px); min-width:0; padding:24px;
+    overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; border:1px solid #dce4ef; border-radius:16px; background:#fff; color:#24334a; box-shadow:0 24px 70px #07162f40;
+  }
+  .user-modal-backdrop .user-modal:not(.user-details):not(.stock-edit-form) { width:min(680px,100%); }
+  .user-modal-backdrop :is(.user-modal,.flow-modal)>.card-heading { position:sticky; top:-24px; z-index:5; background:white; padding:16px 0; margin: -8px 0 20px; border-bottom:1px solid #e3e9f1; align-items:flex-start; gap:16px; }
+  .user-modal-backdrop .card-heading h2,.user-modal-backdrop .card-heading h3 { margin:0; font-size:20px; line-height:1.4; overflow-wrap:anywhere; }
+  .user-modal-backdrop .modal-close,.samplers-modal>.modal-close { flex-shrink:0; width:36px; height:36px; border-radius:8px; cursor:pointer; }
+  .user-modal-backdrop :is(input,select,textarea),.samplers-modal :is(input,select,textarea) { box-sizing:border-box; max-width:100%; min-width:0; font:inherit; }
+  .user-modal-backdrop :is(.user-fields,.flow-form-grid,.receiving-fields) { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .user-modal-backdrop label { min-width:0; line-height:1.5; }
+  .user-modal-backdrop :is(.user-fields,.flow-form-grid) label { display:grid; gap:6px; }
+  .user-modal-backdrop :is(.user-fields,.flow-form-grid) :is(input,select,textarea) { width:100%; padding:10px 12px; border:1px solid #c8d3e2; border-radius:7px; }
+  .user-modal-backdrop input[type=checkbox],.user-modal-backdrop input[type=radio] { width:auto; }
+  .user-modal-backdrop textarea { min-height:90px; resize:vertical; }
+  .user-modal-backdrop fieldset { min-width:0; }
+  .user-modal-backdrop :is(.flow-buttons,.receiving-actions,.flow-tabs),.samplers-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .user-modal-backdrop .flow-tabs { padding:10px 0; margin:16px 0; border-bottom:1px solid #e3e9f1; }
+  .user-modal-backdrop .table-wrap { width:100%; overflow-x:auto; }
+  .user-modal-backdrop :is(.flow-details,.user-details>dl) { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .user-modal-backdrop dd { margin:4px 0 0; overflow-wrap:anywhere; }
+  .user-modal-backdrop :is(.error-toast,[role=alert]) { overflow-wrap:anywhere; }
+  .samplers-modal { padding-top:48px; }
+  .samplers-modal>.modal-close { top:8px; right:12px; }
+  .user-modal-backdrop :is(button,input,select,textarea):focus-visible,.samplers-modal :is(button,input,select,textarea):focus-visible { outline:3px solid #91b8f2; outline-offset:2px; }
+  .flow-summary { flex-wrap:wrap; }
+  .flow-summary button { min-width:160px; }
+  .flow-summary button b { display:block; }
+}
+@media screen and (max-width:640px) {
+  .user-modal-backdrop,.samplers-backdrop { padding:10px; }
+  .user-modal-backdrop :is(.user-modal,.flow-modal),.samplers-modal { padding:16px; width:100%; max-height:calc(100dvh - 20px); border-radius:12px; }
+  .user-modal-backdrop :is(.user-modal,.flow-modal)>.card-heading { top:-16px; }
+  .user-modal-backdrop :is(.user-fields,.flow-form-grid,.receiving-fields,.flow-details,.user-details>dl) { grid-template-columns:1fr; }
+  .user-modal-backdrop .grn-signatures { grid-template-columns:1fr; }
+  .samplers-modal { padding-top:48px; }
+  .flow-summary button { min-width:0; flex:1 1 140px; }
+}

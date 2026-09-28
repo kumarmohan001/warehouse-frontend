@@ -6,9 +6,9 @@ import qc from './qc';
 import production from './production';
 
 const pagesByRole = {
-  admin: { ...admin, 'Warehouse / Location': workflowPages.admin['Warehouse / Location'], 'QC Records': workflowPages.admin['QC Records'], 'Receiving Stock': workflowPages.admin['Receiving Stock'] },
-  warehouse: { ...warehouse, 'QC Approved Queue': workflowPages.warehouse['QC Approved Queue'], 'Warehouse / Location': workflowPages.warehouse['Warehouse / Location'] },
+  admin: { ...admin, ...workflowPages.admin, Dashboard: admin.Dashboard },
+  warehouse: { ...warehouse, ...workflowPages.warehouse, Dashboard: warehouse.Dashboard },
   'qc-test': { ...qc, ...workflowPages['qc-test'], Dashboard: qc.Dashboard },
-  production,
+  production: { ...production, ...workflowPages.production, Dashboard: production.Dashboard },
 };
 export const getRolePage = (role, page) => page === 'Edit Profile' ? EditProfile : pagesByRole[role]?.[page];

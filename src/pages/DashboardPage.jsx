@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { authApi } from '../features/auth/authApi';
 import { dashboardApi } from '../features/dashboard/dashboardApi';
 import Sidebar from '../components/Sidebar';
+import RoleAccounts from './admin/RoleAccounts';
 import RoleTabs from '../components/RoleTabs';
 import { roleDashboards, roleLabel } from '../data/roleDashboards';
 import { getRolePage } from '../routes/rolePages';
@@ -20,6 +21,7 @@ export default function DashboardPage({ session, onLogout, onProfileUpdate }) {
   const [message, setMessage] = useState('');
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [selectedRole, setSelectedRole] = useState(user.role);
+  const [selectedAccount, setSelectedAccount] = useState(null);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -82,7 +84,7 @@ export default function DashboardPage({ session, onLogout, onProfileUpdate }) {
   async function logout() { try { await authApi.logout(session.token); } finally { onLogout(); } }
   const roleConfig = roleDashboards[selectedRole] || roleDashboards.warehouse;
   const ActivePage = getRolePage(selectedRole, activePage);
-  const selectRole = (role) => { setSelectedRole(role); setActivePage('Dashboard'); };
+  const selectRole = (role) => { setSelectedRole(role); setSelectedAccount(null); setSelectedReceiptId(null); setActivePage('Dashboard'); };
   const openAccountPage = (page) => { setActivePage(page); setProfileMenuOpen(false); };
 
   if (serviceUnavailable) return <ServiceUnavailable onRetry={() => window.location.reload()} />;
@@ -114,9 +116,11 @@ export default function DashboardPage({ session, onLogout, onProfileUpdate }) {
       <section className="workspace">
         <header className="topbar"><div><h2>Welcome, <span>{user.name.split(' ')[0]}</span></h2><p>Signed in as {roleLabel(user.role)}</p></div></header>
         <div className="content">
-          {ActivePage ? <ActivePage onProfileUpdate={onProfileUpdate} onLogout={onLogout} user={user} selectedReceiptId={selectedReceiptId} onCloseReceipt={() => setSelectedReceiptId(null)} token={session.token} overview={overview} onNavigate={(page) => { setSelectedReceiptId(null); setActivePage(page); }} onBack={() => setActivePage('Dashboard')} /> : <ComingSoonPage role={roleConfig.label} page={activePage} onBack={() => setActivePage('Dashboard')} />}
+          {!isAdmin && activePage === 'Dashboard' ? <RoleAccounts key={user._id || user.id} token={session.token} role={user.role} account={user} self onNavigate={setActivePage} /> : isAdmin && selectedRole !== 'admin' && activePage === 'Dashboard' ? <RoleAccounts key={`${selectedRole}:${selectedAccount?._id || 'list'}`} token={session.token} role={selectedRole} account={selectedAccount} onSelect={setSelectedAccount} /> : ActivePage ? <ActivePage onProfileUpdate={onProfileUpdate} onLogout={onLogout} user={user} selectedReceiptId={selectedReceiptId} onCloseReceipt={() => setSelectedReceiptId(null)} token={session.token} overview={overview} onNavigate={(page) => { setSelectedReceiptId(null); setActivePage(page); }} onBack={() => setActivePage('Dashboard')} /> : <ComingSoonPage role={roleConfig.label} page={activePage} onBack={() => setActivePage('Dashboard')} />}
         </div>
       </section>
     </div>
   </main>;
 }
+
+

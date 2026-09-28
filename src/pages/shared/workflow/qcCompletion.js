@@ -3,6 +3,7 @@ export function qcCompletion(record) {
   const documents = record?.qc?.documents || [];
   const missingDocuments = ['Test Report (COA)', 'Supporting Documents'].filter((kind) => !documents.some((document) => document.kind === kind && document.fileUrl));
   return {
+    uploadFg: Array.isArray(record?.documents) && record.documents.some(document => Boolean(document?.fileUrl)),
     sampling: Boolean(record?.sampling?.number),
     tests: tests.length > 0,
     uploadQc: missingDocuments.length === 0,

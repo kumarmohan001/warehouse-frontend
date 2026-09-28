@@ -25,7 +25,7 @@ const shared = {
   },
   production: {
     label: 'Production', menuTitle: 'PRODUCTION MENU', subtitle: 'Material requisitions and receipt confirmation',
-    menu: [['Dashboard', '▦'], ['Create Requisition', '□'], ['Requisition Status', '◷'], ['Dispensing Notifications', '▱'], ['Receive Material', '◇'], ['Discrepancies', '⌁']],
+    menu: [['Dashboard', '▦'], ['Available Materials', 'RM'], ['Create Requisition', '□'], ['Requisition Status', '◷'], ['Dispensing Notifications', '▱'], ['Receive Material', '◇'], ['Discrepancies', '⌁'], ['FG Handover', 'FG']],
     stats: [['Open Requisitions', '04', 'awaiting dispensing', 'blue'], ['Awaiting Receipt', '01', 'dispensed, not yet received', 'amber'], ['Received Today', '03', 'up 1 vs yesterday', 'green'], ['Open Discrepancies', '01', 'see MR-000125', 'rose']],
     processTitle: 'REQUISITION MR-000125 — RM-001, 250 KG', processSteps: ['Requested', 'Dispensed', 'Sent to Prod.', 'Received', 'Checked', 'Accepted'], processActive: 3,
     tableTitle: 'My requisitions', actionLabel: '+ New requisition', columns: ['MR No.', 'Material', 'Qty Req.', 'Batch Issued', 'Status'],

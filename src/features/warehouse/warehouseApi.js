@@ -3,6 +3,8 @@ import { request } from '../../api/httpClient';
 const authorization = (token) => ({ Authorization: `Bearer ${token}` });
 
 export const warehouseApi = {
+  saveSamplersReport: (token, id, values) => request(`/api/warehouse/receivings/${id}/samplers-report`, { method: 'PUT', headers: authorization(token), body: JSON.stringify(values) }),
+  saveSignatureImages: (token, id, values) => request(`/api/warehouse/receivings/${id}/signature-images`, { method: 'PATCH', headers: authorization(token), body: JSON.stringify(values) }),
   create: (token, formData) => request('/api/warehouse/create', { method: 'POST', headers: authorization(token), body: formData }),
   qcAssignees: (token) => request('/api/warehouse/qc-assignees', { headers: authorization(token) }),
   notifications: (token) => request('/api/warehouse/notifications', { headers: authorization(token) }),

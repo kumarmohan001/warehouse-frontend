@@ -1,4 +1,5 @@
 import AuditEvents from './AuditEvents';
+import AvailableMaterials from '../../production/AvailableMaterials';
 import React from 'react';
 import WorkflowPage from './WorkflowPage';
 import WorkflowOverview from './WorkflowOverview';
@@ -30,11 +31,12 @@ export const workflowPages = {
     'Warehouse / Location': Locations,
   },
   production: {
+    'Available Materials': AvailableMaterials,
     Dashboard: (props) => <WorkflowOverview {...props} mode="production" />,
     'Create Requisition': page('Material Requisitions', 'requisition', 'production'),
     'Requisition Status': page('Requisition Status', 'requisition', 'production'),
-    'Dispensing Notifications': page('Material Sent to Production', 'requisition', 'production', 'Sent to Production,Partially Dispensed'),
-    'Receive Material': page('Production Material Receipt', 'requisition', 'production', 'Sent to Production,Partially Dispensed'),
+    'Dispensing Notifications': (props) => <WorkflowPage {...props} title="Material Sent to Production" kind="requisition" mode="production" awaitingReceipt />,
+    'Receive Material': (props) => <WorkflowPage {...props} title="Production Material Receipt" kind="requisition" mode="production" awaitingReceipt />,
     Discrepancies: page('Receipt Discrepancies', 'requisition', 'production', 'Discrepancy'),
     'FG Handover': page('Finished Goods Handover', 'fg', 'production'),
   },
