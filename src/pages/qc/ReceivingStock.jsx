@@ -1,3 +1,5 @@
+import SamplersReport from './SamplersReport';
+import { GrnRecord } from '../warehouse/GrnForm';
 import QcLifecycle from './components/QcLifecycle';
 import React, { useEffect, useState } from 'react';
 import { warehouseApi } from '../../features/warehouse/warehouseApi';
@@ -15,6 +17,8 @@ export default function ReceivingStock({ token, user, selectedReceiptId, onClose
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [detailError, setDetailError] = useState('');
+  const [detailReload, setDetailReload] = useState(0);
   const [receiptId, setReceiptId] = useState(null);
   const [receipt, setReceipt] = useState(null);
   const [status, setStatus] = useState('');
@@ -37,15 +41,15 @@ export default function ReceivingStock({ token, user, selectedReceiptId, onClose
   useEffect(() => {
     if (!receiptId) { setReceipt(null); return; }
     let active = true;
-    setReceipt(null); setError('');
+    setReceipt(null); setDetailError('');
     warehouseApi.detail(token, receiptId).then(({ record }) => {
       if (active) { setReceipt(record); setStatus(record.status); setNote(''); }
-    }).catch((error) => { if (active) { setError(error.message); setReceiptId(null); } });
+    }).catch((error) => { if (active) { setDetailError(error.message); } });
     return () => { active = false; };
-  }, [token, receiptId]);
+  }, [token, receiptId, detailReload]);
 
   const close = () => { if (!saving) { setReceiptId(null); onCloseReceipt(); } };
-  const canChange = receipt && (user?.role === 'admin' || (user?.role === 'qc-test' && String(receipt.qcAssignedTo?._id) === String(user?.id || user?._id)));
+  const canChange = receipt && (user?.role === 'admin' || (user?.role === 'qc-test' && (!receipt.qcAssignedTo || String(receipt.qcAssignedTo?._id || receipt.qcAssignedTo) === String(user?.id || user?._id))));
   async function save(event) {
     event.preventDefault(); setSaving(true); setError('');
     try {
@@ -60,14 +64,17 @@ export default function ReceivingStock({ token, user, selectedReceiptId, onClose
     {error && <p className="stock-toast error-toast" role="alert">{error}</p>}
     <div className="receiving-fields qc-stock-filters"><label>Search receipts<input value={search} placeholder="GRN, material, supplier or batch" onChange={(event) => { setSearch(event.target.value); setPage(1); }} /></label><label>Status<select value={filter} onChange={(event) => { setFilter(event.target.value); setPage(1); }}><option value="">All statuses</option>{statuses.map((value) => <option key={value}>{value}</option>)}</select></label></div>
     <article className="stock-list-card"><div className="table-wrap"><table className="stock-table"><thead><tr><th>GRN</th><th>Material / Batch</th><th>Supplier</th><th>Quantity</th><th>QC reviewer</th><th>Status</th><th>Action</th></tr></thead><tbody>
-      {loading ? <tr><td colSpan="7">Loading receipts...</td></tr> : records.length ? records.map((record) => <tr key={record._id}><td><button className="text-button" onClick={() => setReceiptId(record._id)}>{record.grnNumber}</button></td><td>{record.materialName}<small>{record.batchNo}</small></td><td>{record.supplierName}</td><td>{record.receivedQuantity} {record.quantityUnit}</td><td>{record.qcAssignedTo?.name || 'Not assigned'}</td><td>{record.status}</td><td><button className="outline" onClick={() => setReceiptId(record._id)}>View / Update</button></td></tr>) : <tr><td colSpan="7">No receipts found.</td></tr>}
+      {loading ? <tr><td colSpan="7">Loading receipts...</td></tr> : records.length ? records.map((record) => <tr key={record._id} className="qc-receipt-row" onClick={() => setReceiptId(record._id)}><td><button className="text-button" onClick={() => setReceiptId(record._id)}>{record.grnNumber}</button></td><td>{record.materialName}<small>{record.batchNo}</small></td><td>{record.supplierName}</td><td>{record.receivedQuantity} {record.quantityUnit}</td><td>{record.qcAssignedTo?.name || 'Not assigned'}</td><td>{record.status}</td><td><button className="outline" onClick={() => setReceiptId(record._id)}>View / Update</button></td></tr>) : <tr><td colSpan="7">No receipts found.</td></tr>}
     </tbody></table></div><div className="receiving-actions"><button className="outline" disabled={page <= 1 || loading} onClick={() => setPage((value) => value - 1)}>Previous</button><span>Page {page} of {Math.max(1, pagination.totalPages)} · {pagination.total} receipts</span><button className="outline" disabled={page >= pagination.totalPages || loading} onClick={() => setPage((value) => value + 1)}>Next</button></div></article>
-    {receiptId && <div className="user-modal-backdrop" onMouseDown={close}><article role="dialog" aria-modal="true" aria-label="Receiving details" className="user-form user-modal user-details qc-receipt-details" onMouseDown={(event) => event.stopPropagation()}><div className="card-heading"><h3>{receipt?.grnNumber || 'Loading receipt...'}</h3><button type="button" className="modal-close" disabled={saving} onClick={close} aria-label="Close receipt">×</button></div>
+    {receiptId && <div className="user-modal-backdrop" onMouseDown={close}><article role="dialog" aria-modal="true" aria-label="Receiving details" className="user-form user-modal user-details qc-receipt-details" onMouseDown={(event) => event.stopPropagation()}><div className="card-heading"><h3>{receipt?.grnNumber || (detailError ? 'Unable to load receipt' : 'Loading receipt...')}</h3><button type="button" className="modal-close" disabled={saving} onClick={close} aria-label="Close receipt">×</button></div>
+      {detailError && <div role="alert"><p>{detailError}</p><button type="button" className="outline" onClick={() => setDetailReload(value => value + 1)}>Retry</button></div>}
       {receipt && <><QcLifecycle receipt={receipt} /><dl>{fields.map((field) => <div key={field}><dt>{label(field)}</dt><dd>{(field.endsWith('Date') || field.endsWith('At')) ? date(receipt[field]) : String(receipt[field] ?? '—')}</dd></div>)}<div><dt>Received by</dt><dd>{receipt.receivedBy?.name || '—'}</dd></div><div><dt>QC reviewer</dt><dd>{receipt.qcAssignedTo?.name || 'Not assigned'}</dd></div></dl>
         <div className="stock-documents"><h4>Documents</h4>{Object.entries(receipt.documents || {}).map(([key, document]) => document?.fileUrl ? <a key={key} href={document.fileUrl} target="_blank" rel="noreferrer">{label(key)}: {document.fileName || 'Open document'}</a> : <span key={key}>{label(key)}: {document?.fileName || 'Missing'}</span>)}</div>
         {canChange ? <form onSubmit={save} className="qc-status-form"><label>Status<select value={status} onChange={(event) => setStatus(event.target.value)}>{statuses.map((value) => <option key={value} disabled={receipt.documentStatus !== 'Documents OK' && ['Quarantine', 'Under Test', 'Approved'].includes(value)}>{value}</option>)}</select></label><label>QC note / reason<textarea value={note} onChange={(event) => setNote(event.target.value)} required={['Hold', 'Rejected'].includes(status)} /></label><button className="primary" disabled={saving}>{saving ? 'Saving...' : 'Update status'}</button></form> : <p>Only the assigned QC reviewer or QC Manager can update this receipt.</p>}
         {error && <p className="error-toast" role="alert">{error}</p>}
+<GrnRecord key={receipt._id} record={receipt} token={token} user={user} onSaved={setReceipt} /><button type="button" className="outline" onClick={() => window.print()}>Print GRN</button>
         <h4>Status history</h4>{receipt.statusHistory?.length ? <ul>{receipt.statusHistory.map((entry, index) => <li key={entry._id || index}>{entry.from} → {entry.to} · {entry.changedBy?.name || 'QC'} · {date(entry.changedAt)}{entry.note && <p>{entry.note}</p>}</li>)}</ul> : <p>No QC status changes yet.</p>}
+        <SamplersReport key={receipt._id} record={receipt} token={token} user={user} onSaved={updated => { setReceipt(updated); setRecords(current => current.map(item => item._id === updated._id ? updated : item)); }} />
       </>}
     </article></div>}
   </section>;

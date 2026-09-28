@@ -66,9 +66,7 @@ export default function RoleAccounts({ token, role, account, onSelect, self = fa
         {role === 'warehouse' && <>
           <p>Currently available stock across all warehouse accounts.</p>
           <DashboardStats stats={[
-            ...((result.warehouseStock || []).length
-              ? result.warehouseStock.map((item) => ['Available stock', `${item.available.toLocaleString()} ${item._id || ''}`, 'across all warehouse accounts', 'green'])
-              : [['Available stock', '0', 'across all warehouse accounts', 'green']]),
+            ['Available stock', (result.warehouseStock || []).filter(item => item.available > 0).map(item => `${item.available.toLocaleString()} ${item._id || ''}`).join(' / ') || '0', 'across all warehouse accounts', 'green'],
           ]} />
           <h3>This account's records</h3>
         </>}
