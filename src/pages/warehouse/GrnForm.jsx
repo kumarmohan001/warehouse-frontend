@@ -8,7 +8,7 @@ export const grnSections = [
   ['Material Status', [
     ['materialName', 'Description', 'text', true], ['invoiceNumber', 'Invoice No.', 'text', true],
     ['batchNo', 'Batch No.', 'text', true], ['grnDate', 'GRN Date', 'date'],
-    ['manufacturingDate', 'Mfg. Date', 'date', true], ['grnNumber', 'GRN No.', 'text', true],
+    ['manufacturingDate', 'Mfg. Date', 'date', true], ['grnNumber', 'GRN No.', 'text'],
     ['expiryDate', 'Exp. Date', 'date', true], ['transport', 'Transport'],
     ['packSize', 'Pack Size'], ['lrNumber', 'LR No.'],
     ['receivedQuantity', 'Total Qty.', 'number', true], ['inwardType', 'Inward Type'],
@@ -18,7 +18,7 @@ export const grnSections = [
   ]],
   ['GST Details', [['hsnCode', 'HSN Code'], ['purchaseFrom', 'Purchase From'], ['gstNumber', 'GST No.'], ['state', 'State'], ['gstAmount', 'GST Amount', 'number'], ['gstRate', 'GST Rate', 'rate']]],
   ['Bill Details', [['orderQuantity', 'Order Qty.', 'number'], ['pendingQuantity', 'Pending Qty. / Not applicable'], ['billAmount', 'Bill Amount', 'number'], ['paymentTerms', 'Terms of Payment']]],
-  ['Warehouse Details', [['materialType', 'Material Type', 'material', true], ['materialCode', 'Material Code', 'text', true], ['quantityUnit', 'Quantity Unit', 'text', true], ['containers', 'Number of Containers', 'number', true], ['storageRequirement', 'Storage Requirement', 'text', true], ['remarks', 'Remarks']]],
+  ['Warehouse Details', [['materialType', 'Material Type', 'material', true], ['materialCode', 'Material Code', 'text', true], ['quantityUnit', 'Quantity Unit', 'unit', true], ['containers', 'Number of Containers', 'number', true], ['storageRequirement', 'Storage Requirement', 'text', true], ['remarks', 'Remarks']]],
 ];
 export const grnFields = grnSections.flatMap(([, fields]) => fields);
 const today = () => { const now = new Date(); return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-'); };
@@ -30,15 +30,31 @@ export function GrnHeader() {
   return <header className="grn-header"><div className="grn-company"><img src="/protech-biopharma-logo.jpeg" alt="Protech Biopharma" /><div><h2>Protech Biopharma Pvt. Ltd.</h2><p>Plot No. 4/48 I &amp; 4/49 I, Zone-I, SIDCO Industrial Growth Centre, Lassipora, Pulwama Pin-192305 (J&amp;K) INDIA</p></div></div><div className="grn-meta"><span><b>Format No.:</b> SOP/WH/009/F02-03</span><span><b>Effective Date:</b> 11/07/2026</span></div><h3>Goods Received Note</h3></header>;
 }
 
+const fieldPlaceholders = {
+  materialName: 'Enter material description',
+  invoiceNumber: 'Enter invoice number',
+  batchNo: 'Enter batch number',
+  grnNumber: 'Auto-generated on save (GRN-001)',
+  lrNumber: 'Enter LR number',
+  receivedQuantity: 'Enter total quantity',
+  poNumber: 'Enter PO number',
+  manufacturer: 'Enter manufacturer name',
+  supplierName: 'Enter supplier full name',
+  gstNumber: 'Enter GST number',
+  orderQuantity: 'Enter order quantity',
+  pendingQuantity: 'Enter pending quantity or Not applicable',
+  paymentTerms: 'Enter payment terms',
+};
+
 export function GrnFields({ values, onChange }) {
-  return <div className="grn-sections">{grnSections.map(([title, fields]) => <section className={`grn-section ${title === 'Warehouse Details' ? 'grn-warehouse' : ''} ${['GST Details', 'Bill Details'].includes(title) ? 'grn-financial' : ''}`} key={title}><h3>{title}</h3><div className="grn-fields">{fields.map(([key, label, type = 'text', required]) => <label key={key}>{label}{required && ' *'}{['rate', 'material'].includes(type) ? <select name={key} value={values[key]} onChange={onChange} required={required}><option value="">Select</option>{(type === 'rate' ? [18, 12, 5] : materialTypes).map(value => <option key={value} value={value}>{value}{type === 'rate' ? '%' : ''}</option>)}</select> : <input name={key} type={type} value={values[key]} onChange={onChange} required={required} min={type === 'number' ? (key === 'containers' ? 1 : key === 'receivedQuantity' ? 0.000001 : 0) : undefined} step={key === 'containers' ? 1 : 'any'} />}</label>)}</div></section>)}</div>;
+  return <div className="grn-sections">{grnSections.map(([title, fields]) => <section className={`grn-section ${title === 'Warehouse Details' ? 'grn-warehouse' : ''} ${['GST Details', 'Bill Details'].includes(title) ? 'grn-financial' : ''}`} key={title}><h3>{title}</h3><div className="grn-fields">{fields.map(([key, label, type = 'text', required]) => <label key={key}>{label}{required && ' *'}{['rate', 'material', 'unit'].includes(type) ? <select className={values[key] ? undefined : 'grn-select-placeholder'} name={key} value={values[key]} onChange={onChange} required={required}>{type !== 'unit' && <option value="">Select {label.toLowerCase()}</option>}{(type === 'rate' ? [18, 12, 5] : type === 'unit' ? ['Kg', 'Gram'] : materialTypes).map(value => <option key={value} value={value}>{value}{type === 'rate' ? '%' : ''}</option>)}</select> : <input readOnly={key === 'grnNumber'} placeholder={type === 'date' ? undefined : fieldPlaceholders[key] || `Enter ${label.toLowerCase()}`} name={key} type={type} value={values[key]} onChange={onChange} required={required} min={type === 'number' ? (key === 'containers' ? 1 : key === 'receivedQuantity' ? 0.000001 : 0) : undefined} step={key === 'containers' ? 1 : 'any'} />}</label>)}</div></section>)}</div>;
 }
 
 export function GrnQc({ record = {}, onSignatureChange, disabled }) {
   const name = value => value?.name || '';
   const test = label => record.qc?.tests?.find(item => item.testName?.toLowerCase() === label.toLowerCase())?.actualResult;
-  const fields = [['Sampled By', name(record.sampling?.sampledBy)], ['Sampled Qty.', record.sampling?.quantity], ['Inner Packing', test('Inner Packing')], ['Container Sampled', record.sampling?.containers], ['A.R. No.', record.sampling?.number], ['A.R. Date', date(record.sampling?.samplingDate)], ['Status', record.qc?.decision], ['Assay', test('Assay')], ['LOD/ Moisture', test('LOD/ Moisture')], ['Analyst By', name(record.qc?.tests?.[0]?.analyst)], ['Dimensions', test('Dimensions')], ['Thickness', test('Thickness')], ['Grammage', test('Grammage')], ['Color Scheme', test('Color Scheme')], ['Capacity', test('Capacity')], ['PH', test('PH')], ['Qty. Approved', record.qc?.decision === 'Approved' ? record.receivedQuantity : undefined], ['Partly Qty. Rejected', test('Partly Qty. Rejected')], ['Approved By', name(record.qc?.decisionBy)]];
-  return <><section className="grn-section"><h3>Q.C. Testing</h3><p className="grn-help">Completed through the QC sampling and testing workflow.</p><dl className="grn-qc">{fields.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value ?? ''}</dd></div>)}</dl></section><div className="grn-signatures">{[['preparedSignature', 'Prepared By'], ['checkedSignature', 'Checked By'], ['approvedSignature', 'Approved By']].map(([key, label]) => <SignaturePad key={key} label={label} value={record[key] || ''} disabled={disabled} onChange={onSignatureChange ? value => onSignatureChange(key, value) : undefined} />)}</div></>;
+  const fields = [['Sampled By', name(record.sampling?.sampledBy)], ['Sampled Qty.', record.sampling?.quantity], ['Inner Packing', test('Inner Packing')], ['Container Sampled', record.sampling?.containers], ['A.R. No.', record.sampling?.number], ['A.R. Date', date(record.sampling?.samplingDate)], ['Status', record.qc?.decision], ['Assay', test('Assay')], ['LOD/ Moisture', test('LOD/ Moisture')], ['Analyst By', name(record.qc?.tests?.[0]?.analyst)], ['Dimensions', test('Dimensions')], ['Thickness', test('Thickness')], ['Grammage', test('Grammage')], ['Color Scheme', test('Color Scheme')], ['Capacity', test('Capacity')], ['PH', test('PH')], ['Qty. Approved', record.qc?.decision === 'Approved' ? record.receivedQuantity : undefined], ['Partly Qty. Rejected', test('Partly Qty. Rejected')]];
+  return <><section className="grn-section"><h3>Q.C. Testing</h3><p className="grn-help">Completed through the QC sampling and testing workflow.</p><dl className="grn-qc">{fields.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value ?? ''}</dd></div>)}</dl></section><div className="grn-signatures">{[['preparedSignature', 'Prepared By']].map(([key, label]) => <SignaturePad key={key} label={label} value={record[key] || ''} disabled={disabled} onChange={onSignatureChange ? value => onSignatureChange(key, value) : undefined} />)}</div></>;
 }
 
 export function GrnRecord({ record, token, user, onSaved }) {

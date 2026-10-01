@@ -49,7 +49,7 @@ export default function StockForm({ token, user, onNavigate = () => {} }) {
   return <section className="receiving-page">
     {user && <article className="receiving-card"><h3>Receiving account</h3><p><strong>{user.name}</strong> | {user.email}{user.phone ? ` | ${user.phone}` : ''}</p><small>This receipt is automatically saved under your signed-in account.</small></article>}
     {toast && <div className="success-toast" role="status">✓ {toast}</div>}
-    <div className="page-title"><div><h1>Goods Received Note / Stock Form</h1><p>Record supplier material before it enters the warehouse workflow.</p></div><span className="stock-rule">Not available for normal stock or production</span></div>
+    <div className="page-title"><div><h1>Material Receiving / Goods Received Note</h1><p>Record supplier material before it enters the warehouse workflow.</p></div><span className="stock-rule">Not available for normal stock or production</span></div>
     {error && <div className="stock-toast error-toast" role="alert">⚠ {error}</div>}
     <form className="receiving-form" onSubmit={submit}>
       <div className="grn-sheet"><GrnHeader /><GrnFields values={form} onChange={update} /><GrnQc record={{ ...form, receivedBy: user }} disabled={saving} onSignatureChange={(key, value) => setForm(current => ({ ...current, [key]: value }))} /></div>

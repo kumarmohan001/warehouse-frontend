@@ -126,7 +126,7 @@ export default function WorkflowPage({ token, user, title, kind = 'raw', mode, d
         {kind === 'fg' && mode === 'warehouse' && record.status !== 'Available' && <button className="text-button" onClick={() => { close(); onNavigate('Warehouse / Location'); }}>Manage storage locations</button>}
         {raw && mode === 'qc' && <p className="lifecycle-description">Test results: {completion.tests ? `${record.qc.tests.length} saved` : 'Not saved'} · QC documents: {completion.uploadQc ? 'Uploaded' : `Missing ${completion.missingDocuments.join(', ')}`}</p>}
         {raw && record.status !== 'Available' && <p className="flow-note">This material is blocked for production until QC approves it and Warehouse physically accepts it.</p>}
-        {raw && mode === 'warehouse' && ['Document Hold', 'Quarantine', 'Hold'].includes(record.status) && <button className="text-button" onClick={() => { close(); onNavigate('Stock Form'); }}>Open receipt editor</button>}
+        {raw && mode === 'warehouse' && ['Document Hold', 'Quarantine', 'Hold'].includes(record.status) && <button className="text-button" onClick={() => { close(); onNavigate('Material Receiving'); }}>Open receipt editor</button>}
         {raw && <QcLifecycle receipt={record} />}
         <nav className="flow-tabs" aria-label="Record sections">{['Details', 'Documents', 'Traceability'].map((name) => <button key={name} className={tab === name ? 'active' : ''} onClick={() => setTab(name)}>{name}</button>)}</nav>
         {tab === 'Details' && <RecordDetails record={record} raw={raw} />}
