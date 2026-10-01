@@ -31,3 +31,7 @@
   .grn-sheet .grn-company h2 { font-size:20px; }
   .grn-sheet .grn-qc { font-size:10px; }
 }
+
+.grn-fields input::placeholder { color:#758195; opacity:1; }
+.grn-fields select.grn-select-placeholder { color:#758195; }
+.grn-fields select option { color:#172438; }
